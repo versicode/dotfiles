@@ -1,10 +1,5 @@
-" Name:    lumione
-" Author:  Ruslan Versicode<versicode@gmail.com>
-" Description: Modified theme - mix from lumicode + atom one theme
-" Supported syntax - php, html, twig, js, css, scss
-" Thanks Ramzi Akremi and m8rge
-
-" Version: 1.1.1-pre
+" Modified: Ruslan <versicode@gmail.com>
+"
 " Name:    one vim colorscheme
 " Author:  Ramzi Akremi
 " License: MIT
@@ -282,9 +277,6 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     let s:hue_5   = 'e06c75' " red 1
     let s:hue_5_2 = 'be5046' " red 2
 
-    let s:error_color   = 'e29ea4' " error color
-    let s:warning_color = 'e8e27d' " warning color
-
     let s:hue_6   = 'd19a66' " orange 1
     let s:hue_6_2 = 'e5c07b' " orange 2
 
@@ -297,7 +289,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     let s:vertsplit    = '181a1f'
     let s:special_grey = '3b4048'
     let s:visual_grey  = '3e4452'
-    let s:pmenu        = '333841'
+    " let s:pmenu        = '333841'
+    let s:pmenu        = '000000'
   else
     let s:mono_1 = '494b53'
     let s:mono_2 = '696c77'
@@ -309,9 +302,6 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 "    let s:hue_3  = 'a626a4' " purple
 "    let s:hue_4  = '50a14f' " green
 "
-	let s:error_color   = 'aa3f48' " error color
-	let s:warning_color = 'c1b928' " warning color
-
 "    let s:hue_5   = 'e45649' " red 1
 "    let s:hue_5_2 = 'ca1243' " red 2
 "
@@ -344,6 +334,9 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     let s:hue_12   = '000000' " black 1
 
+    let s:hue_13   = '00afff' " light blue
+
+    let s:hue_14   = 'af005f' " black 1
 " custom end
 
 
@@ -359,19 +352,19 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     let s:vertsplit    = 'e7e9e1'
     let s:special_grey = 'd3d3d3'
     let s:visual_grey  = 'd0d0d0'
-    let s:pmenu        = 'dfdfdf'
+    " let s:pmenu        = 'dfdfdf'
+    let s:pmenu        = '747474'
   endif
 
   let s:syntax_fg = s:mono_1
   let s:syntax_fold_bg = s:mono_3
 
   "}}}
+  " Custom --------------------------------------------------------{{{
+  call <sid>X('QAnswer',       s:hue_13,     '',      'bold')
+  "}}}
 
   " Vim editor color --------------------------------------------------------{{{
-  call <sid>X('NeomakeErrorSign',       s:error_color,     '',      '')
-  call <sid>X('NeomakeWarningSign',       s:warning_color,     '',      '')
-  call <sid>X('SpellBad',       s:error_color,     '',      '')
-  call <sid>X('SpellCap',       s:warning_color,     '',      '')
   call <sid>X('Normal',       s:hue_12,     '',      '')
   call <sid>X('bold',         '',              '',               'bold')
   call <sid>X('ColorColumn',  '',              s:syntax_cursor,  '')
@@ -382,11 +375,11 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
   call <sid>X('CursorLine',   '',              s:syntax_cursor,  'none')
   call <sid>X('Directory',    s:hue_2,         '',               '')
   call <sid>X('ErrorMsg',     s:hue_5,         s:syntax_bg,      'none')
-  call <sid>X('Error',     s:hue_5,         s:syntax_bg,      'none')
+  call <sid>X('Error',     s:hue_14,         s:syntax_bg,      'none')
   call <sid>X('VertSplit',    s:vertsplit,     '',               'none')
   call <sid>X('Folded',       s:syntax_bg,     s:syntax_fold_bg, 'none')
   call <sid>X('FoldColumn',   s:mono_3,        s:syntax_cursor,  '')
-  call <sid>X('IncSearch',    s:hue_6,         '',               '')
+  " call <sid>X('IncSearch',    s:hue_6,         '',               '')
   call <sid>X('LineNr',       s:mono_4,        '',               '')
   call <sid>X('CursorLineNr', s:syntax_fg,     s:syntax_cursor,  'none')
   call <sid>X('MatchParen',   s:hue_5,         s:syntax_cursor,  'underline,bold')
@@ -394,12 +387,12 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
   call <sid>X('ModeMsg',      s:syntax_fg,     '',               '')
   call <sid>X('MoreMsg',      s:syntax_fg,     '',               '')
   call <sid>X('NonText',      s:mono_3,        '',               'none')
-  call <sid>X('PMenu',        '',              s:pmenu,          '')
-  call <sid>X('PMenuSel',     '',              s:mono_4,         '')
-  call <sid>X('PMenuSbar',    '',              s:syntax_bg,      '')
-  call <sid>X('PMenuThumb',   '',              s:mono_1,         '')
+  call <sid>X('Pmenu',        '',              s:pmenu,          '')
+  call <sid>X('PmenuSel',     '',              s:mono_4,         '')
+  call <sid>X('PmenuSbar',    '',              s:syntax_bg,      '')
+  call <sid>X('PmenuThumb',   '',              s:mono_1,         '')
   call <sid>X('Question',     s:hue_2,         '',               '')
-  call <sid>X('Search',       s:syntax_bg,     s:hue_6_2,        '')
+  " call <sid>X('Search',       s:syntax_bg,     s:hue_6_2,        '')
   call <sid>X('SpecialKey',   s:special_keys,  '',               'none')
   call <sid>X('Whitespace',   s:special_grey,  '',               'none')
   call <sid>X('StatusLine',   s:syntax_fg,     s:syntax_cursor,  'none')
@@ -667,13 +660,13 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
   call <sid>X('jsFunctionKey',             s:hue_2,   '', '')
   call <sid>X('jsFuncParens',           s:hue_1,  '', '')
   call <sid>X('jsFunction',             s:hue_5,   '', '')
-  call <sid>X('jsGlobalObjects',        s:hue_6_2, '', '')
+  call <sid>X('jsGlobalNodeObjects',        s:hue_2, '', '')
   call <sid>X('jsModuleWords',          s:hue_3,   '', '')
   call <sid>X('jsModules',              s:hue_3,   '', '')
   call <sid>X('jsNoise',                s:hue_1,  '', '')
   call <sid>X('jsNull',                 s:hue_6,   '', '')
   call <sid>X('jsOperator',             s:hue_5,   '', '')
-  call <sid>X('jsParen',               s:hue_3,  '', '')
+  call <sid>X('jsParen',               s:hue_1,  '', '')
   call <sid>X('jsParens',               s:hue_1,  '', '')
   call <sid>X('jsStorageClass',         s:hue_5,   '', '')
   call <sid>X('jsTemplateBraces',       s:hue_5_2, '', '')
@@ -682,20 +675,31 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
   call <sid>X('jsUndefined',            s:hue_6,   '', '')
   call <sid>X('jsObjectValue',          s:hue_2,   '', '')
   call <sid>X('jsObjectKey',            s:hue_3,   '', '')
-  call <sid>X('jsVariableDef',          s:hue_3,   '', '')
+  call <sid>X('jsVariableDef',          s:hue_1,   '', '')
   call <sid>X('jsConditional',          s:hue_5,   '', '')
-  call <sid>X('jsIfElseBlock',            s:hue_3,   '', '')
-  call <sid>X('jsParenIfElse',            s:hue_3,   '', '')
+  call <sid>X('jsIfElseBlock',            s:hue_1,   '', '')
+  call <sid>X('jsParenIfElse',            s:hue_1,   '', '')
   call <sid>X('jsParensIfElse',            s:hue_1,   '', '')
   call <sid>X('jsIfElseBraces',            s:hue_1,   '', '')
-  call <sid>X('jsObjectValue',            s:hue_3,   '', '')
-  call <sid>X('jsFuncBlock',            s:hue_3,   '', '')
+  call <sid>X('jsObjectValue',            s:hue_1,   '', '')
+  call <sid>X('jsFuncBlock',            s:hue_1,   '', '')
   call <sid>X('jsNumber',            s:hue_1,   '', '')
+  call <sid>X('jsRepeat',            s:hue_5,   '', '')
+  call <sid>X('jsReturn',            s:hue_5,   '', '')
   call <sid>X('jsArguments',            s:hue_3,   '', '')
-  call <sid>X('jsFuncArgs',            s:hue_3,   '', '')
-  call <sid>X('jsObjectProp',            s:hue_2,   '', '')
+  call <sid>X('jsFuncArgs',            s:hue_1,   '', '')
+  call <sid>X('jsObjectProp',            s:hue_3,   '', '')
   call <sid>X('jsObjectBraces',            s:hue_1,   '', '')
   call <sid>X('jsObject',            s:hue_3,   '', '')
+  call <sid>X('jsTry',            s:hue_5,   '', '')
+  call <sid>X('jsCatch',            s:hue_5,   '', '')
+  call <sid>X('jsException',            s:hue_5,   '', '')
+  call <sid>X('jsExceptions',            s:hue_2,   '', '')
+  call <sid>X('jsLabel',            s:hue_5,   '', '')
+  call <sid>X('jsStatement',            s:hue_5,   '', '')
+  call <sid>X('jsArguments',            s:hue_1,   '', '')
+  call <sid>X('jsGlobalObjects',        s:hue_2, '', '')
+  call <sid>X('jsSuper',        s:hue_2, '', '')
   " https://github.com/othree/yajs.vim
   call <sid>X('javascriptArrowFunc',    s:hue_3,   '', '')
   call <sid>X('javascriptClassExtends', s:hue_3,   '', '')
@@ -731,14 +735,36 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
   " }}}
 
   " Markdown highlighting ---------------------------------------------------{{{
-  call <sid>X('markdownUrl',              s:mono_3,  '', '')
-  call <sid>X('markdownBold',             s:hue_6,   '', 'bold')
-  call <sid>X('markdownItalic',           s:hue_6,   '', 'bold')
-  call <sid>X('markdownCode',             s:hue_4,   '', '')
-  call <sid>X('markdownCodeBlock',        s:hue_5,   '', '')
-  call <sid>X('markdownCodeDelimiter',    s:hue_4,   '', '')
-  call <sid>X('markdownHeadingDelimiter', s:hue_5_2, '', '')
-  call <sid>X('markdownH1',               s:hue_5,   '', '')
+  " call <sid>X('markdownUrl',              s:mono_3,  '', '')
+  " call <sid>X('markdownBold',             s:hue_6,   '', 'bold')
+  " call <sid>X('markdownItalic',           s:hue_6,   '', 'bold')
+  " call <sid>X('markdownCode',             s:hue_4,   '', '')
+  " call <sid>X('markdownCodeBlock',        s:hue_5,   '', '')
+  " call <sid>X('markdownCodeDelimiter',    s:hue_4,   '', '')
+  " call <sid>X('markdownHeadingDelimiter', s:hue_5_2, '', '')
+  " call <sid>X('markdownH1',               s:hue_5,   '', '')
+  " call <sid>X('markdownH2',               s:hue_5,   '', '')
+  " call <sid>X('markdownH3',               s:hue_5,   '', '')
+  " call <sid>X('markdownH3',               s:hue_5,   '', '')
+  " call <sid>X('markdownH4',               s:hue_5,   '', '')
+  " call <sid>X('markdownH5',               s:hue_5,   '', '')
+  " call <sid>X('markdownH6',               s:hue_5,   '', '')
+  " call <sid>X('markdownListMarker',       s:hue_5,   '', '')
+  call <sid>X('mkdURL',                   s:mono_3,  '', '')
+  call <sid>X('mkdLink',                  s:mono_3,  '', '')
+  call <sid>X('mkdCode',                  s:hue_4,   '', '')
+  call <sid>X('mkdCodeStart',             s:hue_5,   '', '')
+  call <sid>X('mkdCodeEnd',               s:hue_5,   '', '')
+  call <sid>X('mkdCodeDelimiter',         s:hue_4,   '', '')
+  call <sid>X('mdkTitle',                 s:hue_4,   '', 'bold')
+  call <sid>X('mdkHeading',               s:hue_4,   '', 'bold')
+  call <sid>X('htmlH1',                   s:hue_4,   '', 'bold')
+  " call <sid>X('htmlBoldItalic',           s:hue_1,   '', 'italic')
+  call <sid>X('mkdDelimiter',             s:hue_5_2, '', '')
+  call <sid>X('mkdBold',                  s:hue_6,   '', 'bold')
+  call <sid>X('mkdBoldItalic',            s:hue_6,   '', 'bold')
+  call <sid>X('mkdListItem',              s:hue_5,   '', '')
+
   call <sid>X('markdownH2',               s:hue_5,   '', '')
   call <sid>X('markdownH3',               s:hue_5,   '', '')
   call <sid>X('markdownH3',               s:hue_5,   '', '')
@@ -785,7 +811,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
 
   " comments
-  call <sid>X('phpComment',  s:hue_11,   '', '')
+  call <sid>X('phpComment',  s:hue_11,   '', 'italic')
   call <sid>X('phpDocTags',  s:hue_11,   '', 'bold')
 
   " functions

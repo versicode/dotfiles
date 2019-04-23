@@ -1,7 +1,16 @@
 # dotfiles
-My dotfiles
+My dotfiles:
+ - nvim
+ - tmux
+ - bash
+ - karabiner (MacOS)
 
 
-## To install nvim config
+## To install config
+```
+stow nvim
+stow bash
+stow tmux
+stow karabiner
+```
 
-Copy all from nvim/ folder to ~/.config/nvim/

@@ -1,0 +1,55 @@
+*myhelp.txt*    For Neovim version 0.3.1 Last change: 2019 April  23 
+*myhelp*
+
+Ruslan's cheat sheet of Vim stuff he always forgets.
+
+===============================================================================
+CONTENTS
+
+    1. Normal Mode.......................................|myhelp-normal|
+    2. Command Mode......................................|myhelp-command|
+    3. Visual Mode.......................................|myhelp-visual|
+    4. Insert Mode.......................................|myhelp-insert|
+    5. Tips..............................................|myhelp-tips|
+
+===============================================================================
+1. Normal Mode                                         *myhelp-normal*
+
+   - ^vg_ : Visual select whole line
+   - zf{motion} : create fold
+   - za : toggle fold
+   - zR : open all folds
+   - zT : close all folds
+   - <leader>i : import thing (package, namespace, filepath)
+   - <leader>e : expand thing (package, namespace, filepath)
+   - <C-p> : fzf files
+   - <C-f> : fzf buffers
+   - <M-l> : fzf buffer lines
+   - <C-b> : fzf tags
+   - <leader><C-b> : fzf buffer tags
+   - <C-w><leader> : open tag in horizontal split
+   - <C-w>] : open tag in vertical split
+   - <A-<> : move argument to left
+   - <A->> : move argument to right
+
+2. Command Mode                                        *myhelp-command*
+
+   - :x : Save buffer only if modified, then exit (better than :wq) (or ZZ)
+   - <C-e> while wildcard menu helps to process next level
+   - :GStashList
+   - :UndotreeToggle
+   - :TagbarToggle
+
+3. Visual Mode                                         *myhelp-visual*
+
+   - test
+
+4. Insert Mode                                         *myhelp-insert*
+
+   - <leader>i : import thing (package, namespace, filepath)
+   - <leader>e : expand thing (package, namespace, filepath)
+
+6. Tips                                                *myhelp-tips*
+
+  - find all print_r and populate quickfix list
+    :cexpr system('git ls-files --modified \| xargs rg --vimgrep "print_r"')
