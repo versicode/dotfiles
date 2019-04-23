@@ -104,6 +104,9 @@
 
     Plug 'justinmk/vim-sneak'
     Plug 'mhinz/vim-signify'
+    Plug 'justinmk/vim-sneak'
+
+    Plug 'diepm/vim-rest-console'
 
     " Omni-completion
     autocmd FileType php setlocal omnifunc=phpactor#Complete
@@ -206,7 +209,9 @@
 
         autocmd BufNewFile,BufRead *.html.twig set syntax=html.twig
 
-        :autocmd FileType yaml set tabstop=2|set shiftwidth=2|set expandtab
+        autocmd FileType yaml setl tabstop=2|setl shiftwidth=2|setl expandtab
+
+        " autocmd BufNewFile,BufRead *.yaml setl tabstop=2|setl shiftwidth=2|setl expandtab
 
         autocmd BufNewFile,BufRead *.md set tw=80
         "autocmd FileType html.twig.js.css let b:deoplete_ignore_sources = ['omni']
@@ -512,10 +517,12 @@
         let g:esearch = {
         \ 'adapter': 'ack',
         \ 'backend': 'nvim',
-        \ 'out':     'qflist',
+        \ 'out':     'win',
         \}
+        map <A-f> :NERDTreeClose <CR>
         call esearch#map('<A-f>', 'esearch')
         call esearch#out#win#map('o',       'open')
+        " let g:esearch#out#win#open = 'win'
     " }
 
     " vim-gutentags {
@@ -596,6 +603,16 @@
         let g:php_refactor_command='php /usr/bin/refactor.phar'
     " }
 
+    " diepm/vim-rest-console {
+        let g:vrc_trigger = '<A-r>'
+        let g:vrc_show_command = 0
+        let g:vrc_curl_opts = {
+        \ '-i': '',
+        \}
+        " Поддержка русского языка
+        let g:vrc_auto_format_uhex = 1
+        " autocmd FileType rest map <buffer> <C-G> ...
+    " }
 " }
 
 " Functions {
@@ -649,6 +666,8 @@
 "Other {
     nnoremap <leader><leader><F7> :call RunInBrowser() <CR>
 
+    autocmd FileType php noremap <leader><F7> :w!<CR>:!/usr/bin/php %<CR>
+
     function! RunInBrowser()
         let path = expand('%:p')
         let arr_path = split(path, '/')
@@ -700,6 +719,9 @@
 
     "" Use your key instead of default key which is <C-F>
     "map <leader>sf :execute ":!"g:symfony_enable_shell_cmd<CR>
+
+
+    noremap <A-g> :set nopaste <CR>
 
     fun! NumWindows()
         let num_wins = 0
