@@ -123,6 +123,7 @@
       let g:vdebug_options['break_on_open']=1
       let g:vdebug_options['debug_file_level']=2
       let g:vdebug_options['debug_file']='~/vdebug.log'
+      let g:vdebug_options['path_maps']={}
     Plug 'neomake/neomake'
       let g:neomake_php_enabled_makers = ['php', 'phpmd',]
       let g:neomake_warning_sign={'text': '⚠', 'texthl': 'NeomakeWarningSign'}
@@ -718,6 +719,22 @@
 
   command! GetNamespaceAndClassAndMethod call GetNamespaceAndClassFn()
 
+  function! GetFunctionName()
+    " Save some registers
+    let l:r_a = @a
+    let l:r_v = @v
+
+    normal! mv[[2fnw"ayw'v
+
+    let function_name = @a
+
+    " Restore registers
+    let @a = l:r_a
+    let @v = l:r_v
+
+    return function_name
+  endfunction
+
   " Highlight all instances of word under cursor, when idle.
   " Useful when studying strange source code.
   function! AutoHighlightToggle()
@@ -810,11 +827,6 @@
 
     " Clear search highlight and paste mode
     noremap <silent> <A-k> :nohls<CR>:set nopaste<CR>
-
-    " Save file using C-S
-    noremap <silent> <C-S> :update<CR>
-    vnoremap <silent> <C-S> <C-C>:update<CR>
-    inoremap <silent> <C-S> <esc>:update<CR>
 
     " Remove tab symbol in insert mode when S-Tab
     inoremap <S-Tab> <C-d>
@@ -944,8 +956,16 @@
 
   nnoremap q<Space> :History:<CR>
 
+  nnoremap <A-m> :TagbarToggle<CR>
 
   nnoremap <leader>do :silent execute 'g/'.g:vdebug_options["marker_closed_tree"]."/normal \<lt>CR>"<CR>
+
+  " Save file using C-S
+  noremap  <silent> <C-S> :update<CR>
+  vnoremap <silent> <C-S> <C-C>:update<CR>
+  imap <C-S> <Plug>(PearTreeFinishExpansion):update<CR>
+  imap <esc> <Plug>(PearTreeFinishExpansion)
+
 
   " output php result in near window
   nnoremap <M-r> <C-w>lggVGd:silent r!php /tmp/sandbox.php<CR><C-w>h
