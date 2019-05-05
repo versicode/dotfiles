@@ -159,6 +159,7 @@
             \ 7: 'Июль', 8: 'Август', 9: 'Сентябрь',
             \ 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'
             \ }
+      let g:vimwiki_table_mappings = 0
     Plug 'mattn/calendar-vim'
       let g:calendar_focus_today = 1
       let g:calendar_monday = 1
@@ -179,6 +180,8 @@
     Plug 'SirVer/ultisnips'
       let g:UltiSnipsJumpForwardTrigger="<tab>"
       let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+      let g:UltiSnipsEditSplit='context'
+      let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
     Plug 'honza/vim-snippets' " snippets for ultisnips
 
     Plug 'arnaud-lb/vim-php-namespace'
@@ -365,6 +368,11 @@
       autocmd FileType vimwiki call matchadd('phpStringSingle', '\-[0-9.]*\-[0-9.]*\-') 
       autocmd FileType vimwiki call matchadd('VimwikiComment', '\[.*@@')
 
+      autocmd FileType vimwiki syn region VimwikiArchive start="#---#" end="\#---#" | hi def link VimwikiArchive Comment
+
+      " add new checklist item with file name
+      autocmd FileType vimwiki nnoremap <buffer> <A-n> o- [ ] <C-r>=expand('%:r')<CR> 
+
       " create pomodoro snippet
       autocmd FileType vimwiki nnoremap <buffer> <leader>wpc A -0--<left>
 
@@ -481,7 +489,7 @@
 
 
 " Commands and Functions {{{
-"
+
   " windo that backs to original window
   command! -nargs=+ -complete=command Windo 
       \ let s:currentWindow = winnr() |
@@ -758,6 +766,25 @@
 
   " Usage: visual select all table, then :SumColumn 1 then :SumColumn 2
   command! -range=% -nargs=1 SumColumn <line1>,<line2>!awk -F '-' '{print; sum+=$('<args>' + 1)} END {print "Total: "sum}'
+
+  function! DivideTwoNumbers(num1, num2, ...)
+    let l:precision = get(a:, 1, 2)
+    return trim(system('echo "scale='.l:precision.'; '.a:num1.'/'.a:num2.'" | bc -l'))
+  endfunction
+
+  function! CalculatePerDay(num)
+    let @o = DivideTwoNumbers(a:num, 5)
+    execute 'norm! "op'
+  endfunction
+
+  command! -nargs=1 CalculatePerDay call CalculatePerDay(<f-args>)
+
+  function! CalculatePercent(num1, num2)
+    let @o = DivideTwoNumbers(a:num1, a:num2)
+    execute 'norm! "ophhxea%'
+  endfunction
+
+  command! -nargs=+ CalculatePercent call CalculatePercent(<f-args>)
 
   " Allows local debugging @todo
   " function! VdebugTogglePathMaps()
