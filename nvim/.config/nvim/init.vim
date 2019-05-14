@@ -68,6 +68,9 @@
       \             ['readonly', 'filename', 'modified'], ['tagbar'] ],
       \    'right': [ ['neomake_warnings', 'neomake_errors', 'neomake_ok'], [ 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype'  ] ],
       \ },
+      \ 'inactive': {
+      \   'left': [ [ 'filename', 'modified' ] ],
+      \ },
       \ 'component': {
       \   'tagbar': '%{tagbar#currenttag("%s", "", "")}',
       \ },
@@ -124,6 +127,9 @@
       let g:vdebug_options['debug_file_level']=2
       let g:vdebug_options['debug_file']='~/vdebug.log'
       let g:vdebug_options['path_maps']={}
+      let g:vdebug_keymap={}
+      let g:vdebug_keymap['eval_under_cursor']='<M-e>'
+      let g:vdebug_keymap['eval_visual']='<S-M-e>'
     Plug 'neomake/neomake'
       let g:neomake_php_enabled_makers = ['php', 'phpmd',]
       let g:neomake_warning_sign={'text': '⚠', 'texthl': 'NeomakeWarningSign'}
@@ -271,6 +277,9 @@
   " Keep indents on wrap
   set breakindent
 
+ " Keep some lines before zt
+  set scrolloff=3
+
   " Italic font {
     set t_ZH=[3m
     set t_ZR=[23m
@@ -310,8 +319,8 @@
       " Keymaps
       autocmd FileType php inoremap <leader>i <Esc>:call IPhpInsertUse()<CR>
       autocmd FileType php inoremap <leader>e <Esc>:call IPhpExpandClass()<CR>
-      autocmd FileType php noremap  <leader>i :call PhpInsertUse()<CR>
-      autocmd FileType php noremap  <leader>e :call PhpExpandClass()<CR>
+      autocmd FileType php nnoremap <leader>i :call PhpInsertUse()<CR>
+      autocmd FileType php nnoremap <leader>e :call PhpExpandClass()<CR>
 
       autocmd FileType php nnoremap <A-w> :call FindPHPUsages()<CR>
 
@@ -395,6 +404,7 @@
       autocmd FileType vimwiki nmap <leader>w-  <Plug>VimwikiRemoveHeaderLevel
       autocmd FileType vimwiki nmap <leader>ah <Plug>VimwikiAddHeaderLevel
       autocmd FileType vimwiki nmap <M-c> <Plug>VimwikiToggleListItem
+      autocmd FileType vimwiki vmap <M-c> <Plug>VimwikiToggleListItem
 
 
 
@@ -732,7 +742,8 @@
     let l:r_a = @a
     let l:r_v = @v
 
-    normal! mv[[2fnw"ayw'v
+    normal mv[[2fnw"ayw'v
+
 
     let function_name = @a
 
@@ -890,7 +901,7 @@
     nnoremap mS :echo "Global mark S added!"<CR>mS
     nnoremap mM :echo "Global mark M added!"<CR>mM
 
-    vnoremap <leader>ym :s/[^\n]\zs\n\ze[^\n]/ /g<CR>gvyu:nohlsearch<CR>:echo 'Lines without newlines copied!'<CR>
+    vnoremap <leader>ym :s/[^\n]\zs\n\ze[^\n]/ /g<CR>gv:s/\n\n/\r/g<CR>gvyu:nohlsearch<CR>:echo 'Lines without newlines copied!'<CR>
 
     nnoremap <Space> :
     " nnoremap q<Space> q:
@@ -988,14 +999,20 @@
   nnoremap <leader>do :silent execute 'g/'.g:vdebug_options["marker_closed_tree"]."/normal \<lt>CR>"<CR>
 
   " Save file using C-S
-  noremap  <silent> <C-S> :update<CR>
-  vnoremap <silent> <C-S> <C-C>:update<CR>
-  imap <C-S> <Plug>(PearTreeFinishExpansion):update<CR>
-  imap <esc> <Plug>(PearTreeFinishExpansion)
+  " noremap  <silent> <C-S> :update<CR>
+  " vnoremap <silent> <C-S> <C-C>:update<CR>
+  " imap <C-S> <Plug>(PearTreeFinishExpansion):update<CR>
+  " imap <esc> <Plug>(PearTreeFinishExpansion)
 
+  nnoremap gs :update<CR>
+  nnoremap gS :bufdo update<CR>
+
+  " toggle comment state for current and next line
+  nmap gC gccjgcck
 
   " output php result in near window
-  nnoremap <M-r> <C-w>lggVGd:silent r!php /tmp/sandbox.php<CR><C-w>h
+  "@todo put this in some menu
+  " nnoremap <M-r> <C-w>lggVGd:silent r!php /tmp/sandbox.php<CR><C-w>h
 
   "<leader>i F_T import thing (package, namespace, filepath)
   "<leader>e F_T expand thing (package, namespace, filepath)
