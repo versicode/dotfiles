@@ -11,11 +11,13 @@
   call plug#begin('~/.local/share/nvim/plugged')
 
   " Draft {{{
-    " Show and copy path with line to clipboard
-    " nnoremap <leader><C-g> :let @+=expand("%") . ':' . line(".")<CR> :echo "File path and line copied to clipboard!"<CR>
-    " think about semantic mappings
-    " nnoremap y<C-g> :let @* = expand("%")<CR>
-    " vnoremap <leader>vt y:VdebugTrace <C-r>0<CR>
+
+    function! OpenPluginAtGithub()
+      let line = getline('.')
+      let plugin_name = substitute(line, '.*Plug \([a-zA-Z/\.-]\)*', "", "")
+      :echo substitute(getline('.'), ".*Plug '\([a-zA-Z/\.\-]*\)'", "\1", "")
+    endfunction
+
   " }}}
 
   " Motions and text manipulation {{{
@@ -65,8 +67,8 @@
       \ 'colorscheme': 'one',
       \ 'active': {
       \    'left':  [ ['mode', 'paste'],
-      \             ['readonly', 'filename', 'modified'], ['tagbar'] ],
-      \    'right': [ ['neomake_warnings', 'neomake_errors', 'neomake_ok'], [ 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype'  ] ],
+      \             ['readonly', 'filename', 'modified'], ['tagbar', 'currentfunction'] ],
+      \    'right': [ [ 'cocstatus' ], [ 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype'  ] ],
       \ },
       \ 'inactive': {
       \   'left': [ [ 'filename', 'modified' ] ],
@@ -74,18 +76,9 @@
       \ 'component': {
       \   'tagbar': '%{tagbar#currenttag("%s", "", "")}',
       \ },
-      \	'component_function': {
-      \		'neomake': 'lightline_neomake#component',
-      \	},
-      \ 'component_expand': {
-      \ 'neomake_warnings': 'lightline#neomake#warnings',
-      \ 'neomake_errors': 'lightline#neomake#errors',
-      \ 'neomake_ok': 'lightline#neomake#ok',
-      \ },
-      \ 'component_type': {
-      \ 'neomake_warnings': 'warning',
-      \ 'neomake_errors': 'error',
-      \ 'neomake_ok': 'left',
+      \ 'component_function': {
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction'
       \ },
       \ }
   " }}}
@@ -98,11 +91,6 @@
     Plug 'tpope/vim-dispatch'
     Plug 'tpope/vim-dadbod'
     Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install', 'on': 'MarkdownPreview'  }
-    Plug 'lyokha/vim-xkbswitch'
-      let g:XkbSwitchEnabled = 1
-      let g:XkbSwitchLib = '/usr/local/lib/libInputSourceSwitcher.dylib'
-      " do not remember language when insert mode
-      let b:XkbSwitchILayout = ''
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
       let g:fzf_preview_layout = 'belowright split new'
@@ -140,12 +128,11 @@
       autocmd User AsyncRunStart echo 'uploading to the server...'
       " @todo fix - it's little buggy
       autocmd User AsyncRunStop if getqflist({'nr' : '$'}).nr > 0 | colder | endif | echo 'upload done!'
-    Plug 'eshion/vim-sync'
+    Plug 'eshion/vim-sync' 
+    "@todo leader sd and leader su
     Plug 'tyru/open-browser.vim'
     Plug 'weirongxu/plantuml-previewer.vim'
-    " Plug 'kristijanhusak/vim-carbon-now-sh'
     Plug 'alvan/vim-php-manual'
-      let g:php_manual_online_search_shortcut = '<leader>pman'
   " }}}
 
   " Git {{{
@@ -189,7 +176,6 @@
       let g:UltiSnipsEditSplit='context'
       let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
     Plug 'honza/vim-snippets' " snippets for ultisnips
-
     Plug 'arnaud-lb/vim-php-namespace'
     Plug 'shawncplus/phpcomplete.vim' " {
       let g:phpcomplete_parse_docblock_comments = 1
@@ -202,6 +188,7 @@
             \ 'jump_to_def_vsplit': '<leader><C-W>]',
             \ 'jump_to_def_tabnew': '<C-W><C-[>',
             \} " @todo test
+    Plug 'neoclide/coc.nvim', {'tag': '*', 'do': './install.sh'}
   " }}}
   
   call plug#end()
@@ -216,6 +203,8 @@
 
   " Allow switch windows while buffer unsaved
   set hidden
+
+  let mapleader = " "
 
   " Identation
   set wrap
@@ -257,7 +246,7 @@
   set undofile
 
   " Fix russian
-  set keymap=russian-jcukenwin
+  " set keymap=russian-jcukenwin
   set iminsert=0
   set imsearch=0
   highlight lCursor guifg=NONE guibg=Cyan
@@ -296,7 +285,6 @@
 
 " FileType {{{
 
-
   " PHP {{{
 
     " Some syntax optimizations
@@ -327,7 +315,12 @@
       autocmd FileType php highlight! link phpFunction phpRegion
       autocmd FileType php highlight! link phpMethod phpRegion
 
+      autocmd FileType php let g:php_manual_online_search_shortcut = '<leader>K'
+
       autocmd BufWritePre *.php %s/\s\+$//e
+
+      " go to local definition
+      autocmd FileType php nmap gd "byiw[[/\<b\><CR>
 
       " @todo bug - cannot select from function defitinion without `j` move
       " omap af :<C-u>normal! j[[$V%<cr>
@@ -342,14 +335,6 @@
 
       " nmap vif j[[$jVk%k$
       " nmap vaf j[[$V%
-
-      " substitute word under cursor
-      nnoremap <leader>cw :s:<C-r><C-w>::g<left><left>
-
-      " substitute visual selection
-      vnoremap <leader>cw :s:::g<left><left>
-
-      nnoremap <C-w>n :tabnew<CR>
 
       " select inside function
       nmap vif ]][[/{<CR>:noh<CR>jVk%k
@@ -403,18 +388,21 @@
       autocmd FileType vimwiki nmap <leader>wtr <Plug>VimwikiTableMoveColumnRight
       autocmd FileType vimwiki nmap <leader>w-  <Plug>VimwikiRemoveHeaderLevel
       autocmd FileType vimwiki nmap <leader>ah <Plug>VimwikiAddHeaderLevel
-      autocmd FileType vimwiki nmap <M-c> <Plug>VimwikiToggleListItem
-      autocmd FileType vimwiki vmap <M-c> <Plug>VimwikiToggleListItem
+      autocmd FileType vimwiki nmap <leader>c <Plug>VimwikiToggleListItem
+      autocmd FileType vimwiki vmap <leader>c <Plug>VimwikiToggleListItem
 
+      " Cool idea for small snippets, I never use ; with letter after it
+      autocmd FileType vimwiki inoremap <buffer> ;` ```<cr><cr>```<Up>
 
-
-
-      
     augroup END
   " }}}
 
   " mysql {{{
     autocmd BufRead *.sql set filetype=mysql
+  " }}}
+
+  " json {{{
+    autocmd FileType json syntax match Comment +\/\/.\+$+ 
   " }}}
 
   " twig {{{
@@ -423,7 +411,7 @@
 
   " rest {{{
     " manipulate on curl output
-    autocmd FileType rest nnoremap <M-r> ggVGy:enew<CR>pggdd
+    autocmd FileType rest nnoremap <leader>e ggVGy:enew<CR>pggdd
   " }}}
 
   " Markdown {{{
@@ -444,6 +432,17 @@
 
   " Fugitive {{{
     autocmd FileType gitcommit set fileencoding=utf-8
+  " }}}
+
+  " cpp {{{
+    autocmd FileType cpp setlocal commentstring=//\ %s
+  " }}}
+
+  " typescript {{{
+    autocmd FileType typescript inoremap <silent><expr> <C-X><C-O> coc#refresh()
+    autocmd FileType typescript nmap <C-]> <Plug>(coc-definition)
+    autocmd FileType typescript nmap <leader>u <Plug>(coc-references)
+    autocmd FileType typescript nmap <leader>r <Plug>(coc-rename)
   " }}}
 
 " }}}
@@ -806,6 +805,9 @@
     " endif
   " endfunction
 
+  " yank selection into new buffer
+  command! -range=% -nargs=? -complete=file Enew silent <line1>,<line2>yank x | enew | put! x | $d_ | if(<q-args> != '') | silent write <args> | endif
+
 " }}}
 
 " My Plugins {{{
@@ -853,6 +855,16 @@
     " yank on big Y
     nnoremap Y yg_
 
+    " no overwrite paste
+    xnoremap p "_dP
+
+    " delete without affecting unnamed register like 'remove'
+    nnoremap s "_d
+    vnoremap s "_d
+
+    " yank last ex-command into system clipboard
+    nnoremap y: :let @+=@:<CR>
+
     " repeat last ex-command
     nnoremap g. @:
 
@@ -864,13 +876,16 @@
     nnoremap cin" ci"
 
     " Clear search highlight and paste mode
-    noremap <silent> <A-k> :nohls<CR>:set nopaste<CR>
+    noremap <silent> gb :nohls<CR>:set nopaste<CR>
 
     " Remove tab symbol in insert mode when S-Tab
     inoremap <S-Tab> <C-d>
 
     " zT - close all folds
     nnoremap zT :set foldlevel=0<CR>
+
+    " Maximize current window
+    map <C-w>f <C-w>\|<C-w>_
 
     " Better scroll
     map <C-U> <C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y><C-Y>
@@ -903,9 +918,6 @@
 
     vnoremap <leader>ym :s/[^\n]\zs\n\ze[^\n]/ /g<CR>gv:s/\n\n/\r/g<CR>gvyu:nohlsearch<CR>:echo 'Lines without newlines copied!'<CR>
 
-    nnoremap <Space> :
-    " nnoremap q<Space> q:
-
     nnoremap zq :setlocal foldlevel-=1<CR>
     nnoremap zp :setlocal foldlevel+=1<CR>
 
@@ -913,15 +925,14 @@
     nnoremap c* *Ncgn
     nnoremap c# #NcgN
 
-    " go to local definition
-    nmap gd "byiw[[/\<b\><CR>
-
     " visual selection search
     " vnoremap <A-/> <Esc>/\%V
+
     vnoremap <A-/> :g//#<left><left>
+
     " vnoremap <A-/> :g//#<left><left>
     " vnoremap <A-/> :lopen<CR>:vimgrep/\%(\%'<\|\%>'<\%<'>\|\%'>\)/ %<left><left><left>
-    " Допилить + вызывать :copen (:lopen) функцию нужно написать
+    " @todo + add location list
     " vnoremap <A-/> :vimgrep/\%(\%'<\\|\%>'<\%<'>\\|\%'>\)/ %<left><left><left>
     " vnoremap <A-/> :call SearchForPatternInFunction()
 
@@ -930,6 +941,9 @@
 
     " execute ":vimgrep/\%(\%'<\\|\%>'<\%<'>\\|\%'>\)" . search . "/ %"
     " endfunction
+
+    nnoremap y<C-g> :let @+=expand("%") . ':' . line(".")<CR>:echo "File path and line copied to clipboard!"<CR>
+    " @todo y1<C-g> possible too
   " }}}
 
   nnoremap <silent> <M-left>  :CmdResizeLeft<CR>
@@ -940,18 +954,16 @@
   nnoremap <silent> <C-p> :FZF<CR>
   nnoremap <silent> <C-f> :Buffers<CR>
 
-  nnoremap <silent>         <C-b> :Tags<CR>
-  nnoremap <silent> <leader><C-b> :BTags<CR>
+  nnoremap <silent> <leader>S :Tags<CR>
+  nnoremap <silent> <leader>s :BTags<CR>
 
-  nnoremap <silent> <M-l> :BLines<CR>
+  nnoremap <silent> <leader>l :BLines<CR>
 
   nnoremap <C-w>\ <C-w>]
   nnoremap <C-w>] :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
 
   nnoremap <A-<> :SidewaysLeft<cr>
   nnoremap <A->> :SidewaysRight<cr>
-
-  nnoremap <F13> :call VrcQuery()<CR>
 
   nnoremap <silent> <BS>  :TmuxNavigateLeft<cr>
   nnoremap <silent> <C-h> :TmuxNavigateLeft<cr>
@@ -961,8 +973,6 @@
 
   nnoremap <silent> Q :call CloseSplitOrDeleteBuffer()<CR>
   nnoremap <silent> <leader>Q :qa!<CR>
-  nnoremap <silent> Й :call CloseSplitOrDeleteBuffer()<CR>
-  nnoremap <silent> <leader>Й :qa!<CR>
 
   nnoremap <leader><F10> :ToggleIgnoreFile<CR>
 
@@ -985,8 +995,8 @@
   cmap <silent> <expr> <enter> search_pulse#PulseFirst()
 
 
-  nnoremap <A-q> :Rg <C-r><C-w><CR>
-  xnoremap <A-q> :<C-u>let @a=VisualSelection()<CR> :Rg <C-r>a<CR> 
+  nnoremap <space>q :Rg <C-r><C-w><CR>
+  xnoremap <space>q :<C-u>let @a=VisualSelection()<CR> :Rg <C-r>a<CR> 
 
   nnoremap <leader>gc :GetNamespaceAndClassAndMethod<CR>
 
@@ -1007,15 +1017,26 @@
   nnoremap gs :update<CR>
   nnoremap gS :bufdo update<CR>
 
-  " toggle comment state for current and next line
+  " toggle comment state for current and next line tpope/vim-commentary
   nmap gC gccjgcck
 
   " output php result in near window
   "@todo put this in some menu
-  " nnoremap <M-r> <C-w>lggVGd:silent r!php /tmp/sandbox.php<CR><C-w>h
+  " nnoremap <M-e> <C-w>lggVGd:silent r!php /tmp/sandbox.php<CR><C-w>h
 
   "<leader>i F_T import thing (package, namespace, filepath)
   "<leader>e F_T expand thing (package, namespace, filepath)
+
+  " substitute word under cursor
+  nnoremap <leader>cw :s:<C-r><C-w>::g<left><left>
+
+  " substitute visual selection
+  vnoremap <leader>cw :s:::g<left><left>
+
+  nnoremap <C-w>n :tabnew<CR>
+
+
+
 " }}}
 
 " Spell {{{

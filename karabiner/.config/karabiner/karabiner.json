@@ -158,6 +158,115 @@
                                 "to_if_alone": [
                                     {
                                         "key_code": "escape"
+                                    },
+                                    {
+                                      "select_input_source": {
+                                        "language": "en"
+                                      }
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                      "description": "change language if alone, use as modifier otherwise",
+                      "manipulators": [
+                        {
+                          "from": {
+                            "key_code": "left_shift",
+                            "modifiers": {
+                              "optional": [
+                                "any"
+                              ]
+                            }
+                          },
+                          "to": [
+                            {
+                              "key_code": "left_shift"
+                            }
+                          ],
+                          "to_if_alone": [
+                            {
+                              "select_input_source": {
+                                "language": "en"
+                              }
+                            }
+                          ],
+                          "type": "basic"
+                        }
+                      ]
+                    },
+                    {
+                      "description": "change language if alone, use as modifier otherwise",
+                      "manipulators": [
+                        {
+                          "from": {
+                            "key_code": "right_shift",
+                            "modifiers": {
+                              "optional": [
+                                "any"
+                              ]
+                            }
+                          },
+                          "to": [
+                            {
+                              "key_code": "right_shift"
+                            }
+                          ],
+                          "to_if_alone": [
+                            {
+                              "select_input_source": {
+                                "language": "ru"
+                              }
+                            }
+                          ],
+                          "type": "basic"
+                        }
+                      ]
+                    },
+                    {
+                        "description": "Post backslash if backslash is pressed alone, otherwise use as ctrl.",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "backslash",
+                                    "modifiers": {
+                                        "optional": [
+                                            "any"
+                                        ]
+                                    }
+                                },
+                                "to": [
+                                    {
+                                        "key_code": "right_control"
+                                    }
+                                ],
+                                "to_if_alone": [
+                                    {
+                                        "key_code": "backslash"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+
+                    {
+                        "description": "pass enter on ctrl-m",
+                        "manipulators": [
+                            {
+                                "from": {
+                                    "key_code": "m",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ]
+                                    }
+                                },
+                                "to":  [
+                                    {
+                                        "key_code": "return_or_enter"
                                     }
                                 ],
                                 "type": "basic"
