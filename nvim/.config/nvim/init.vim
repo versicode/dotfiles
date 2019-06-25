@@ -14,9 +14,13 @@
 
     function! OpenPluginAtGithub()
       let line = getline('.')
-      let plugin_name = substitute(line, '.*Plug \([a-zA-Z/\.-]\)*', "", "")
-      :echo substitute(getline('.'), ".*Plug '\([a-zA-Z/\.\-]*\)'", "\1", "")
+      let plugin_name = substitute(line, "\\v\\s+Plug '\([a-zA-Z/-]*\)'.*", "\\1", "")
+      let url = "http://github.com/" . plugin_name
+
+      execute "silent !open " . url
     endfunction
+
+    command! OpenPluginAtGithub call OpenPluginAtGithub()
 
   " }}}
 
@@ -29,10 +33,6 @@
       let g:vim_resize_disable_auto_mappings = 1
       let g:resize_count=5
     Plug 'AndrewRadev/sideways.vim'
-      omap aa <Plug>SidewaysArgumentTextobjA
-      xmap aa <Plug>SidewaysArgumentTextobjA
-      omap ia <Plug>SidewaysArgumentTextobjI
-      xmap ia <Plug>SidewaysArgumentTextobjI
     Plug 'tpope/vim-surround'
     Plug 'tpope/vim-repeat' " @todo test
     Plug 'tommcdo/vim-lion'
@@ -52,9 +52,8 @@
     Plug 'inside/vim-search-pulse'
       let g:vim_search_pulse_disable_auto_mappings = 1
       let g:vim_search_pulse_color_list = [251, 252, 253, 254, 255]
-      " let g:vim_search_pulse_color_list = [227, 228, 229, 230, 231]
       let g:vim_search_pulse_mode = 'pattern'
-    Plug 'mbbill/undotree'
+    Plug 'mbbill/undotree', { 'on': 'UndotreeToggle'}
     Plug 'majutsushi/tagbar'
       let g:tagbar_autoclose=1
     Plug 'itchyny/lightline.vim'
@@ -89,14 +88,14 @@
     Plug 'christoomey/vim-tmux-navigator'
       let g:tmux_navigator_no_mappings = 1
     Plug 'tpope/vim-dispatch'
-    Plug 'tpope/vim-dadbod'
-    Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install', 'on': 'MarkdownPreview'  }
+    Plug 'tpope/vim-dadbod', { 'for': 'mysql'}
+    Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install', 'on': 'MarkdownPreview', 'for': 'markdown' }
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
       let g:fzf_preview_layout = 'belowright split new'
       let g:fzf_preview_grep_cmd = 'rg --line-number --no-heading'
     Plug 'ludovicchabant/vim-gutentags'
-    Plug 'diepm/vim-rest-console'
+    Plug 'diepm/vim-rest-console', { 'for': 'rest' }
       let g:vrc_set_default_mapping = 0
       let g:vrc_curl_opts = {
       \ '-i': '',
@@ -118,21 +117,16 @@
       let g:vdebug_keymap={}
       let g:vdebug_keymap['eval_under_cursor']='<M-e>'
       let g:vdebug_keymap['eval_visual']='<S-M-e>'
-    Plug 'neomake/neomake'
-      let g:neomake_php_enabled_makers = ['php', 'phpmd',]
-      let g:neomake_warning_sign={'text': '⚠', 'texthl': 'NeomakeWarningSign'}
-      let g:neomake_error_sign={'text': '✖', 'texthl': 'NeomakeErrorSign'}
     Plug 'skywind3000/asyncrun.vim'
       let g:asyncrun_silent = 0
       autocmd User AsyncRunPre   echo 'preparing for upload to the server!'
       autocmd User AsyncRunStart echo 'uploading to the server...'
       " @todo fix - it's little buggy
-      autocmd User AsyncRunStop if getqflist({'nr' : '$'}).nr > 0 | colder | endif | echo 'upload done!'
+      autocmd User AsyncRunStop if getqflist({'nr' : '$'}).nr > 0 | silent colder | endif | echo 'upload done!'
     Plug 'eshion/vim-sync' 
-    "@todo leader sd and leader su
-    Plug 'tyru/open-browser.vim'
-    Plug 'weirongxu/plantuml-previewer.vim'
-    Plug 'alvan/vim-php-manual'
+    Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
+    Plug 'weirongxu/plantuml-previewer.vim', { 'for': 'markdown' }
+    Plug 'alvan/vim-php-manual', { 'for': 'php' }
   " }}}
 
   " Git {{{
@@ -142,7 +136,7 @@
   " }}}
 
   " Organization {{{
-    Plug 'vimwiki/vimwiki'
+    Plug 'vimwiki/vimwiki', { 'for': 'vimwiki' }
       let g:vimwiki_list = []
       let g:vimwiki_conceallevel=3
       let g:vimwiki_hl_cb_checked=2
@@ -153,7 +147,7 @@
             \ 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'
             \ }
       let g:vimwiki_table_mappings = 0
-    Plug 'mattn/calendar-vim'
+    Plug 'mattn/calendar-vim', { 'for': 'markdown' }
       let g:calendar_focus_today = 1
       let g:calendar_monday = 1
       let g:calendar_navi_label = 'Пред,Сегодня,След'
@@ -176,8 +170,8 @@
       let g:UltiSnipsEditSplit='context'
       let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
     Plug 'honza/vim-snippets' " snippets for ultisnips
-    Plug 'arnaud-lb/vim-php-namespace'
-    Plug 'shawncplus/phpcomplete.vim' " {
+    Plug 'arnaud-lb/vim-php-namespace', { 'for': 'php' }
+    Plug 'shawncplus/phpcomplete.vim', { 'for': 'php' } " {
       let g:phpcomplete_parse_docblock_comments = 1
       let g:phpcomplete_enhance_jump_to_definition = 1
       let g:phpcomplete_parse_docblock_comments = 1
@@ -310,7 +304,7 @@
       autocmd FileType php nnoremap <leader>i :call PhpInsertUse()<CR>
       autocmd FileType php nnoremap <leader>e :call PhpExpandClass()<CR>
 
-      autocmd FileType php nnoremap <A-w> :call FindPHPUsages()<CR>
+      autocmd FileType php nnoremap <leader>u :call FindPHPUsages()<CR>
 
       autocmd FileType php highlight! link phpFunction phpRegion
       autocmd FileType php highlight! link phpMethod phpRegion
@@ -925,22 +919,7 @@
     nnoremap c* *Ncgn
     nnoremap c# #NcgN
 
-    " visual selection search
-    " vnoremap <A-/> <Esc>/\%V
-
-    vnoremap <A-/> :g//#<left><left>
-
-    " vnoremap <A-/> :g//#<left><left>
-    " vnoremap <A-/> :lopen<CR>:vimgrep/\%(\%'<\|\%>'<\%<'>\|\%'>\)/ %<left><left><left>
-    " @todo + add location list
-    " vnoremap <A-/> :vimgrep/\%(\%'<\\|\%>'<\%<'>\\|\%'>\)/ %<left><left><left>
-    " vnoremap <A-/> :call SearchForPatternInFunction()
-
-    " function! SearchForPatternInFunction()
-    " let search = input('Enter search pattern: ')
-
-    " execute ":vimgrep/\%(\%'<\\|\%>'<\%<'>\\|\%'>\)" . search . "/ %"
-    " endfunction
+    vnoremap <leader>/ :g//#<left><left>
 
     nnoremap y<C-g> :let @+=expand("%") . ':' . line(".")<CR>:echo "File path and line copied to clipboard!"<CR>
     " @todo y1<C-g> possible too
@@ -1035,6 +1014,11 @@
 
   nnoremap <C-w>n :tabnew<CR>
 
+  " AndrewRadev/sideways.vim
+  omap aa <Plug>SidewaysArgumentTextobjA
+  xmap aa <Plug>SidewaysArgumentTextobjA
+  omap ia <Plug>SidewaysArgumentTextobjI
+  xmap ia <Plug>SidewaysArgumentTextobjI
 
 
 " }}}
