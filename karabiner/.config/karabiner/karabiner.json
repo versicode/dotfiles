@@ -40,16 +40,6 @@
                         "description": "change grave accent to F13",
                         "manipulators": [
                             {
-                                "conditions": [
-                                    {
-                                        "input_sources": [
-                                            {
-                                                "language": "en"
-                                            }
-                                        ],
-                                        "type": "input_source_if"
-                                    }
-                                ],
                                 "from": {
                                     "key_code": "grave_accent_and_tilde",
                                     "modifiers": {
@@ -170,67 +160,11 @@
                         ]
                     },
                     {
-                      "description": "change language if alone, use as modifier otherwise",
-                      "manipulators": [
-                        {
-                          "from": {
-                            "key_code": "left_shift",
-                            "modifiers": {
-                              "optional": [
-                                "any"
-                              ]
-                            }
-                          },
-                          "to": [
-                            {
-                              "key_code": "left_shift"
-                            }
-                          ],
-                          "to_if_alone": [
-                            {
-                              "select_input_source": {
-                                "language": "en"
-                              }
-                            }
-                          ],
-                          "type": "basic"
-                        }
-                      ]
-                    },
-                    {
-                      "description": "change language if alone, use as modifier otherwise",
-                      "manipulators": [
-                        {
-                          "from": {
-                            "key_code": "right_shift",
-                            "modifiers": {
-                              "optional": [
-                                "any"
-                              ]
-                            }
-                          },
-                          "to": [
-                            {
-                              "key_code": "right_shift"
-                            }
-                          ],
-                          "to_if_alone": [
-                            {
-                              "select_input_source": {
-                                "language": "ru"
-                              }
-                            }
-                          ],
-                          "type": "basic"
-                        }
-                      ]
-                    },
-                    {
                         "description": "Post backslash if backslash is pressed alone, otherwise use as ctrl.",
                         "manipulators": [
                             {
                                 "from": {
-                                    "key_code": "backslash",
+                                    "key_code": "quote",
                                     "modifiers": {
                                         "optional": [
                                             "any"
@@ -244,14 +178,13 @@
                                 ],
                                 "to_if_alone": [
                                     {
-                                        "key_code": "backslash"
+                                        "key_code": "quote"
                                     }
                                 ],
                                 "type": "basic"
                             }
                         ]
                     },
-
                     {
                         "description": "pass enter on ctrl-m",
                         "manipulators": [
@@ -267,6 +200,38 @@
                                 "to":  [
                                     {
                                         "key_code": "return_or_enter"
+                                    }
+                                ],
+                                "type": "basic"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "remove word on ctrl-w",
+                        "manipulators": [
+                            {
+                                "conditions": [
+                                  {
+                                    "bundle_identifiers": [
+                                      "^net\\.kovidgoyal\\.kitty$"
+                                    ],
+                                    "type": "frontmost_application_unless"
+                                  }
+                                ],
+                                "from": {
+                                    "key_code": "w",
+                                    "modifiers": {
+                                        "mandatory": [
+                                            "control"
+                                        ]
+                                    }
+                                },
+                                "to":  [
+                                    {
+                                        "key_code": "delete_or_backspace",
+                                        "modifiers": [
+                                            "option"
+                                        ]
                                     }
                                 ],
                                 "type": "basic"

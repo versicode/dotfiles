@@ -7,10 +7,15 @@ export LANG="en_US.UTF-8"
 # Keep bash history between sessions
 export PROMPT_COMMAND='history -a; history -r'
 
+# Append to the history file, don't overwrite it
+shopt -s histappend
+
+export TERM=screen-256color 
 
 shopt -s dotglob # Make mv move hidden files
 shopt -s cdable_vars
-export EDITOR='nvim'
+# export EDITOR='nvim'
+export EDITOR='vim'
 
 
 # Global aliases
@@ -29,6 +34,11 @@ alias v="nvim"
 alias vi="nvim"
 alias vimdiff="nvim -d"
 
+# Taskwarrior
+alias ti='task add due:tomorrow tag:inbox'
+alias t='task'
+
+[ -n "$TMUX" ] && export TERM=screen-256color
 
 # Functions
 parse_git_branch() {
@@ -50,7 +60,7 @@ fi
 
 # Plugins
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
-export FZF_DEFAULT_OPTS="--bind up:preview-up,down:preview-down"
+export FZF_DEFAULT_OPTS="--bind up:preview-page-up,down:preview-page-down"
 
 # export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

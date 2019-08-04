@@ -12,16 +12,6 @@
 
   " Draft {{{
 
-    function! OpenPluginAtGithub()
-      let line = getline('.')
-      let plugin_name = substitute(line, "\\v\\s+Plug '\([a-zA-Z/-]*\)'.*", "\\1", "")
-      let url = "http://github.com/" . plugin_name
-
-      execute "silent !open " . url
-    endfunction
-
-    command! OpenPluginAtGithub call OpenPluginAtGithub()
-
   " }}}
 
   " Motions and text manipulation {{{
@@ -39,7 +29,9 @@
   " }}}
 
   " Visual {{{
-    Plug 'powerman/vim-plugin-AnsiEsc'
+    Plug 'powerman/vim-plugin-AnsiEsc' " {
+      let g:no_plugin_maps = 1
+    " }
     Plug 'machakann/vim-highlightedyank'
     Plug 'sheerun/vim-polyglot' " syntax
     Plug 'Shougo/echodoc.vim'
@@ -126,17 +118,32 @@
     Plug 'eshion/vim-sync' 
     Plug 'tyru/open-browser.vim', { 'for': 'markdown' }
     Plug 'weirongxu/plantuml-previewer.vim', { 'for': 'markdown' }
-    Plug 'alvan/vim-php-manual', { 'for': 'php' }
+    " Plug 'alvan/vim-php-manual', { 'for': 'php' }
   " }}}
 
   " Git {{{
     Plug 'aacunningham/vim-fuzzy-stash'
     Plug 'tpope/vim-fugitive'
     Plug 'mhinz/vim-signify'
+    Plug 'samoshkin/vim-mergetool' " {
+      let g:mergetool_layout = 'mr,b'
+      let g:mergetool_prefer_revision = 'local'
+
+      function s:on_mergetool_set_layout(split)
+        if a:split["layout"] ==# 'mr,b' && a:split["split"] ==# 'b'
+          set nodiff
+          set syntax=on
+
+          resize 15
+        endif
+      endfunction
+
+      let g:MergetoolSetLayoutCallback = function('s:on_mergetool_set_layout')
+    " }
   " }}}
 
   " Organization {{{
-    Plug 'vimwiki/vimwiki', { 'for': 'vimwiki' }
+    Plug 'vimwiki/vimwiki', { 'for': ['vimwiki', 'markdown'] }
       let g:vimwiki_list = []
       let g:vimwiki_conceallevel=3
       let g:vimwiki_hl_cb_checked=2
@@ -147,7 +154,7 @@
             \ 10: 'Октябрь', 11: 'Ноябрь', 12: 'Декабрь'
             \ }
       let g:vimwiki_table_mappings = 0
-    Plug 'mattn/calendar-vim', { 'for': 'markdown' }
+    Plug 'mattn/calendar-vim', { 'for': ['vimwiki', 'markdown'] }
       let g:calendar_focus_today = 1
       let g:calendar_monday = 1
       let g:calendar_navi_label = 'Пред,Сегодня,След'
@@ -260,7 +267,7 @@
   " Keep indents on wrap
   set breakindent
 
- " Keep some lines before zt
+  " Keep some lines before zt
   set scrolloff=3
 
   " Italic font {
@@ -298,44 +305,43 @@
       " for tpope/vim-commentary
       autocmd FileType php setlocal commentstring=//\ %s
 
+      autocmd FileType php setlocal spell spelllang=ru,en
+
       " Keymaps
-      autocmd FileType php inoremap <leader>i <Esc>:call IPhpInsertUse()<CR>
-      autocmd FileType php inoremap <leader>e <Esc>:call IPhpExpandClass()<CR>
-      autocmd FileType php nnoremap <leader>i :call PhpInsertUse()<CR>
-      autocmd FileType php nnoremap <leader>e :call PhpExpandClass()<CR>
+      autocmd FileType php inoremap ;ii <Esc>:call IPhpInsertUse()<CR>
+      autocmd FileType php inoremap ;ie <Esc>:call IPhpExpandClass()<CR>
+      " @todo make filetype-dependent contect menu
+      " autocmd FileType php nnoremap <leader>i :call PhpInsertUse()<CR>
+      " autocmd FileType php nnoremap <leader>e :call PhpExpandClass()<CR>
 
       autocmd FileType php nnoremap <leader>u :call FindPHPUsages()<CR>
 
       autocmd FileType php highlight! link phpFunction phpRegion
       autocmd FileType php highlight! link phpMethod phpRegion
 
-      autocmd FileType php let g:php_manual_online_search_shortcut = '<leader>K'
+      " autocmd FileType php let g:php_manual_online_search_shortcut = '<leader><leader>K'
 
       autocmd BufWritePre *.php %s/\s\+$//e
 
       " go to local definition
       autocmd FileType php nmap gd "byiw[[/\<b\><CR>
 
-      " @todo bug - cannot select from function defitinion without `j` move
-      " omap af :<C-u>normal! j[[$V%<cr>
-      " omap if :<C-u>normal! j[[$jVk%k<cr>
-      " nmap vif :<C-u>normal! j[[$jVk%k$<cr>
-      " nmap vaf :<C-u>normal! j[[$V%<cr>
-      "
-      " nmap vif j[[$jVk%k$
-      " nmap vaf j[[$V%
-      " omap af  j[[$V%
-      " omap if  j[[$jVk%k
+      " autocmd FileType php nmap <C-]> <Plug>(coc-definition)
+      " autocmd FileType php nmap <leader>u <Plug>(coc-references)
+      autocmd FileType php nmap <leader>r <Plug>(coc-rename)
+      " autocmd FileType php nmap <leader>s :call CocAction('workspaceSymbols')<CR>
+      autocmd FileType php nmap <leader>ls :CocList --input outline<CR>
+      autocmd FileType php inoremap <silent><expr> <C-x><C-o> coc#refresh()
 
-      " nmap vif j[[$jVk%k$
-      " nmap vaf j[[$V%
+      autocmd FileType php nnoremap <silent> K :call <SID>show_documentation()<CR>
 
-      " select inside function
-      nmap vif ]][[/{<CR>:noh<CR>jVk%k
-
-      " select all function
-      nmap vaf ]][[/{<CR>:noh<CR>V%
-
+      function! s:show_documentation()
+        if (index(['vim','help'], &filetype) >= 0)
+          execute 'h '.expand('<cword>')
+        else
+          call CocAction('doHover')
+        endif
+      endfunction
     augroup END
 
   " }}}
@@ -372,18 +378,17 @@
 
       autocmd FileType vimwiki vnoremap <buffer> <leader>wl c[[<C-r>"]]<Esc>bb
 
-      autocmd FileType vimwiki nmap <F13> <Plug>VimwikiNextLink
-      autocmd FileType vimwiki nmap <F14> <Plug>VimwikiPrevLink
-
       autocmd FileType vimwiki nmap <C-n> <Plug>VimwikiNextLink
       autocmd FileType vimwiki nmap <F14> <Plug>VimwikiPrevLink
       autocmd FileType vimwiki nmap <A-=> <Plug>VimwikiAddHeaderLevel
       autocmd FileType vimwiki nmap <leader>wtl <Plug>VimwikiTableMoveColumnLeft
       autocmd FileType vimwiki nmap <leader>wtr <Plug>VimwikiTableMoveColumnRight
       autocmd FileType vimwiki nmap <leader>w-  <Plug>VimwikiRemoveHeaderLevel
-      autocmd FileType vimwiki nmap <leader>ah <Plug>VimwikiAddHeaderLevel
-      autocmd FileType vimwiki nmap <leader>c <Plug>VimwikiToggleListItem
-      autocmd FileType vimwiki vmap <leader>c <Plug>VimwikiToggleListItem
+      " autocmd FileType vimwiki nmap <leader>ah <Plug>VimwikiAddHeaderLevel
+      autocmd FileType vimwiki nmap <leader>a <Plug>VimwikiToggleListItem
+      autocmd FileType vimwiki vmap <leader>a <Plug>VimwikiToggleListItem
+      autocmd FileType vimwiki nmap <leader>n <Plug>VimwikiToggleRejectedListItem
+      autocmd FileType vimwiki vmap <leader>n <Plug>VimwikiToggleRejectedListItem
 
       " Cool idea for small snippets, I never use ; with letter after it
       autocmd FileType vimwiki inoremap <buffer> ;` ```<cr><cr>```<Up>
@@ -397,6 +402,8 @@
 
   " json {{{
     autocmd FileType json syntax match Comment +\/\/.\+$+ 
+    autocmd FileType json inoremap <silent><expr> <C-x><C-o> coc#refresh()
+    autocmd FileType json setlocal commentstring=//\ %s
   " }}}
 
   " twig {{{
@@ -420,6 +427,19 @@
 
   " Dirvish {{{
     autocmd FileType dirvish nnoremap <buffer><silent> <c-p> :FZF<cr>
+    autocmd FileType dirvish nnoremap <buffer> <leader>f :call DirvishSearchInFolder()<CR>
+
+    function! DirvishSearchInFolder()
+      let l:folder_absolute_path = getline('.')
+
+      call inputsave()
+      let l:search_text = input('Enter search text: ')
+      call inputrestore()
+
+      execute "Rgl ".l:search_text." ".l:folder_absolute_path
+    endfunction
+
+
     " @todo do it!
     " autocmd FileType dirvish nnoremap <buffer><silent> <A-f> yy:Rag <C-r>"<C-a><A-f><right>
   " }}}
@@ -439,6 +459,9 @@
     autocmd FileType typescript nmap <leader>r <Plug>(coc-rename)
   " }}}
 
+  " vimscript {{{
+  " }}}
+
 " }}}
 
 " Colors {{{
@@ -456,15 +479,15 @@
   hi default DbgCurrentSign term=reverse ctermfg=Black ctermbg=70 guifg=#b2b2b2 guibg=#b2b2b2
 
   " Diff
-  hi DiffAdd    ctermfg=233 ctermbg=194 guifg=#003300 guibg=#DDFFDD gui=none cterm=none
-  hi DiffChange ctermfg=236 ctermbg=254  guibg=#ececec gui=none   cterm=none
-  hi DiffText   ctermfg=233  ctermbg=189  guifg=#000033 guibg=#DDDDFF gui=none cterm=none
-  hi DiffDelete ctermfg=252 ctermbg=224   guifg=#DDCCCC guibg=#FFDDDD gui=none    cterm=none
+  hi DiffAdd    ctermfg=233  ctermbg=194 guifg=#003300 guibg=#ddffdd gui=none cterm=none
+  hi DiffChange ctermfg=236  ctermbg=254               guibg=#ececec gui=none cterm=none
+  hi DiffText   ctermfg=233  ctermbg=189 guifg=#000033 guibg=#DDDDFF gui=none cterm=none
+  hi DiffDelete ctermfg=252  ctermbg=224 guifg=#DDCCCC guibg=#FFDDDD gui=none cterm=none
 
   hi DiffAdded    ctermfg=233 ctermbg=194 guifg=#003300 guibg=#DDFFDD gui=none cterm=none
   hi DiffRemoved  ctermfg=240 ctermbg=224   guifg=#DDCCCC guibg=#FFDDDD gui=none    cterm=none
 
-  " ALE"
+  " ALE
   hi ALEError ctermfg=167 cterm=underline
   hi ALEErrorSign ctermfg=167
   hi ALEWarning ctermfg=4 cterm=underline
@@ -509,19 +532,27 @@
   endfunction
 
   " zz only when leaves screen
-  function! s:maybe_zz(cmd) abort
-    let topline = line('w0')
-    try
-      exe a:cmd
-    catch /E486:/
-      echohl ErrorMsg | echom matchstr(v:exception, 'E486:.*') | echohl None
-    endtry
-    if topline != line('w0')
-      normal! zz
-    endif
-  endfunction
+  " function! s:maybe_zz(cmd) abort
+  "   echo a:cmd
+  "   let topline = line('w0')
+  "   try
+  "     exe a:cmd
+  "   catch /E486:/
+  "     echohl ErrorMsg | echom matchstr(v:exception, 'E486:.*') | echohl None
+  "   endtry
+  "   if topline != line('w0')
+  "     normal! zz
+  "   endif
+  " endfunction
 
   " @todo optimize Rg searches
+
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>,
+  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+  \                         : fzf#vim#with_preview('right:50%', '?'),
+  \                 <bang>0)
+
   command! -bang -nargs=* Rg
     \ call fzf#vim#grep(
     \   'rg --column --line-number -F --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
@@ -624,7 +655,7 @@
       norm! mzgg/classeeyiw`z
       echo 'static method'
 
-      execute 'Rgp '.getreg('0').'::'.expand('<cword>').'\('
+      execute 'Ag '.getreg('0').'::'.expand('<cword>').'\('
     elseif (line_content =~ ' function')
       " @todo protected static method
 
@@ -635,20 +666,20 @@
     elseif (line_content =~ 'function ')
       " function
       echo 'function'
-      execute 'Rgp (?<!function )'.expand('<cword>').'\('
+      execute 'Ag (?<!function )'.expand('<cword>').'\('
     elseif (line_content =~ 'const')
       " class constant
       echo 'constant'
       norm! mzgg/classeeyiw`z
-      execute 'Rgp '.getreg('0').'::'.expand('<cword>').'|self::'.expand('<cword>')
+      execute 'Ag '.getreg('0').'::'.expand('<cword>').'|self::'.expand('<cword>')
     elseif (line_content =~ 'define')
       " constant
       echo 'constant'
-      execute 'Rg '.expand('<cword>')
+      execute 'Ag '.expand('<cword>')
     elseif (line_content =~ 'class ')
       " class
       echo 'class'
-      execute 'Rgp new .*'.expand('<cword>')
+      execute 'Ag new .*'.expand('<cword>')
     elseif (line_content =~ '$')
       " object variable
 
@@ -802,6 +833,51 @@
   " yank selection into new buffer
   command! -range=% -nargs=? -complete=file Enew silent <line1>,<line2>yank x | enew | put! x | $d_ | if(<q-args> != '') | silent write <args> | endif
 
+  function! GoToFileWithLine()
+    call inputsave()
+    let l:search_text = input('Enter file and line: ')
+    call inputrestore()
+    
+    let l:parts = split(l:search_text, ":")
+
+    if len(l:parts) > 0
+      execute "find ".l:parts[0]
+      execute "normal! ".l:parts[1]."G"
+    endif
+  endfunction
+
+  function! SearchInFunction() 
+    call inputsave()
+    let l:search_text = input('Enter word to search: ')
+    call inputrestore()
+
+    execute "normal mxvaf\<esc>`x/\\%V".l:search_text."\<cr>"
+    call feedkeys(":\<C-u>set hlsearch \<enter>n")
+  endfunction
+
+  function! NavigationUtils()
+    let l:c = 0
+    let l:c = confirm("Navigation Menu","&go\ to\ file\n search\ in\ &function")
+    if l:c == 1
+      call GoToFileWithLine()
+    elseif l:c == 2
+      call SearchInFunction()
+    endif
+  endfunction
+
+  command! -bar -range=% RunBufferAsVimscript execute <line1> . ',' . <line2> . 'y|@"'
+
+  function! OpenPluginAtGithub()
+    let line = getline('.')
+    let plugin_name = substitute(line, "\\v\\s+Plug '\([a-zA-Z/-]*\)'.*", '\1', "")
+    let url = "http://github.com/" . plugin_name
+
+    execute "silent !open " . url
+  endfunction
+
+  command! OpenPluginAtGithub call OpenPluginAtGithub()
+
+
 " }}}
 
 " My Plugins {{{
@@ -896,6 +972,9 @@
     " Delete function under cursor
     nnoremap dsf diw<esc>%x``x
 
+    " Change function under cursor
+    nnoremap csf diw<esc>%x``xi
+
     " Cycle through quickfix list
     nnoremap ]q :cn<CR>
     nnoremap [q :cp<CR>
@@ -921,8 +1000,20 @@
 
     vnoremap <leader>/ :g//#<left><left>
 
+    augroup RemoveFugitiveMapping
+      autocmd!
+      autocmd BufEnter * if &filetype != "git" | silent! execute "nunmap <buffer> <silent> y<C-G>" | endif
+    augroup END
+
     nnoremap y<C-g> :let @+=expand("%") . ':' . line(".")<CR>:echo "File path and line copied to clipboard!"<CR>
     " @todo y1<C-g> possible too
+
+    " select inside function
+    nmap vif ]][[/{<CR>:noh<CR>jVk%k
+
+    " select all function
+    nmap vaf ]][[/{<CR>:noh<CR>V%
+
   " }}}
 
   nnoremap <silent> <M-left>  :CmdResizeLeft<CR>
@@ -933,10 +1024,14 @@
   nnoremap <silent> <C-p> :FZF<CR>
   nnoremap <silent> <C-f> :Buffers<CR>
 
-  nnoremap <silent> <leader>S :Tags<CR>
-  nnoremap <silent> <leader>s :BTags<CR>
+  " Symbols
+  nnoremap <silent> <leader>s  :Tags<CR>
 
-  nnoremap <silent> <leader>l :BLines<CR>
+  " Local Symbols
+  nnoremap <silent> <leader>ls :BTags<CR>
+
+  " Keywords in buffer
+  nnoremap <silent> <leader>k :BLines<CR>
 
   nnoremap <C-w>\ <C-w>]
   nnoremap <C-w>] :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
@@ -961,8 +1056,8 @@
   " nnoremap n nzz<Plug>Pulse
   " nnoremap N Nzz<Plug>Pulse
 
-  nnoremap <silent> n :<C-U>call <SID>maybe_zz('norm! '.v:count1.'Nn'[v:searchforward])<CR><Plug>Pulse
-  nnoremap <silent> N :<C-U>call <SID>maybe_zz('norm! '.v:count1.'nN'[v:searchforward])<CR><Plug>Pulse
+  " nnoremap <silent> n :<C-U>call <SID>maybe_zz('norm! '.v:count1.'Nn'[v:searchforward])<CR><Plug>Pulse
+  " nnoremap <silent> N :<C-U>call <SID>maybe_zz('norm! '.v:count1.'nN'[v:searchforward])<CR><Plug>Pulse
 
   nnoremap * *Nzz<Plug>Pulse
   nnoremap # #Nzz<Plug>Pulse
@@ -971,7 +1066,8 @@
 
   " Pulses cursor line on first match
   " when doing search with / or ?
-  cmap <silent> <expr> <enter> search_pulse#PulseFirst()
+  " makes bug with visual search selection
+  " cmap <silent> <expr> <enter> search_pulse#PulseFirst()
 
 
   nnoremap <space>q :Rg <C-r><C-w><CR>
@@ -981,20 +1077,25 @@
 
   nnoremap z/ :if AutoHighlightToggle()<Bar>set hls<Bar>endif<CR>
 
-  nnoremap q<Space> :History:<CR>
+  nnoremap <leader>h :History<CR>
 
-  nnoremap <A-m> :TagbarToggle<CR>
+  nnoremap q: :History:<CR>
+  nnoremap q/ :History/<CR>
+
+  " nnoremap <space>m :TagbarToggle<CR>
+
+  nnoremap <space>gs :Gstatus<CR>
 
   nnoremap <leader>do :silent execute 'g/'.g:vdebug_options["marker_closed_tree"]."/normal \<lt>CR>"<CR>
 
   " Save file using C-S
-  " noremap  <silent> <C-S> :update<CR>
-  " vnoremap <silent> <C-S> <C-C>:update<CR>
-  " imap <C-S> <Plug>(PearTreeFinishExpansion):update<CR>
-  " imap <esc> <Plug>(PearTreeFinishExpansion)
+  noremap  <silent> <C-S> :update<CR>
+  vnoremap <silent> <C-S> <C-C>:update<CR>
+  imap <C-S> <Plug>(PearTreeFinishExpansion):update<CR>
+  imap <esc> <Plug>(PearTreeFinishExpansion)
 
-  nnoremap gs :update<CR>
-  nnoremap gS :bufdo update<CR>
+  " nnoremap gs :update<CR>
+  " nnoremap gS :bufdo update<CR>
 
   " toggle comment state for current and next line tpope/vim-commentary
   nmap gC gccjgcck
@@ -1020,14 +1121,14 @@
   omap ia <Plug>SidewaysArgumentTextobjI
   xmap ia <Plug>SidewaysArgumentTextobjI
 
-
+  nnoremap <leader>n :call NavigationUtils()<CR>
 " }}}
 
 " Spell {{{
-  inoreabbrev emoji:) 😊
-  inoreabbrev emoji:thumbsup: 👍
-  inoreabbrev emoji:clock: ⏳
-  inoreabbrev emoji:? ⁉️
+  inoremap ;:) 😊
+  inoremap ;up 👍
+  inoremap ;tm ⏳
+  inoremap ;qn ⁉️
 " }}}
 
 
