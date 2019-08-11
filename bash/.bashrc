@@ -17,6 +17,7 @@ shopt -s cdable_vars
 # export EDITOR='nvim'
 export EDITOR='vim'
 
+export dot="$HOME/dotfiles"
 
 # Global aliases
 alias cl="clear"
@@ -65,3 +66,4 @@ export FZF_DEFAULT_OPTS="--bind up:preview-page-up,down:preview-page-down"
 # export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH="$PATH:$HOME/.trigger"

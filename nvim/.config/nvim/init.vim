@@ -11,7 +11,7 @@
   call plug#begin('~/.local/share/nvim/plugged')
 
   " Draft {{{
-
+Plug 'johngrib/vim-game-snake'
   " }}}
 
   " Motions and text manipulation {{{
@@ -342,6 +342,29 @@
           call CocAction('doHover')
         endif
       endfunction
+
+
+      onoremap af :<C-u>call PHP_SelectFunction('around')<CR>
+      onoremap if :<C-u>call PHP_SelectFunction('inner')<CR>
+      nmap vaf :<C-u>call PHP_SelectFunction('around')<CR>
+      nmap vif :<C-u>call PHP_SelectFunction('inner')<CR>
+
+      function! PHP_SelectFunction(modifier)
+        if a:modifier == 'inner'
+          if getline('.') !~ 'function'
+            execute "normal [[f(%f{jVk%k"
+          else 
+            execute "normal f(%f{jVk%k" 
+          endif
+        else
+          if getline('.') !~ 'function' 
+            execute "normal [[Vf(%f{%" 
+          else 
+            execute "normal Vf(%f{%" 
+          endif
+        endif
+      endfunction
+
     augroup END
 
   " }}}
@@ -1007,12 +1030,6 @@ command! -bang -nargs=* Ag
 
     nnoremap y<C-g> :let @+=expand("%") . ':' . line(".")<CR>:echo "File path and line copied to clipboard!"<CR>
     " @todo y1<C-g> possible too
-
-    " select inside function
-    nmap vif ]][[/{<CR>:noh<CR>jVk%k
-
-    " select all function
-    nmap vaf ]][[/{<CR>:noh<CR>V%
 
   " }}}
 
